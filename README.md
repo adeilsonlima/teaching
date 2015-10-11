@@ -2,4 +2,4 @@
 
 ##Naming
 
-[year].[semester]-[class]-[subject]
+[2015].[1]-[SO]-[trabalho-pratico]
