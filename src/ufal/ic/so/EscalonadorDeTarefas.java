@@ -3,16 +3,13 @@ package ufal.ic.so;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Comparator;
+import java.util.LinkedList;
 import java.util.List;
-import java.util.SortedSet;
 import java.util.StringTokenizer;
-import java.util.TreeSet;
 
 /** @author Adeilson Lima */
 public class EscalonadorDeTarefas {
@@ -23,18 +20,33 @@ public class EscalonadorDeTarefas {
 	/** passado para o programa na execução em args[1] */
 	private static Politica politica;
 
+	/** Recurso processador */
+	private static Processador processador;
+
 	/** Lista de tarefas */
-	static List<Tarefa> tarefas;
+	private static List<Tarefa> tarefas;
+
+	/** Lista tarefas prontas */
+	private static List<Tarefa> tarefasProntas;
+	
+	private static boolean preemptivo=false;
+
+	/** tarefa no estado executando */
+	private static Tarefa tarefaRodando = null;
 
 	public static void main(String[] args) throws IOException {
 		/** Verifica se todos os parametros foram passados */
 		if (args.length != 2) {
 			System.out.println("Falta argumentos! Tente novamente...");
-			System.out.println("Ex: java EscalonadorDeTarefas input.txt fcfs");
+			System.out.println("Exemplo: java EscalonadorDeTarefas input.txt fcfs");
 			System.exit(1);
 		}
 		nomeArquivo = args[0];
 		politica = Politica.valueOf(args[1]);
+		
+		if(politica==Politica.rr){
+			preemptivo=true;
+		}
 
 		System.out.println(nomeArquivo + " " + politica);
 
@@ -44,6 +56,93 @@ public class EscalonadorDeTarefas {
 		/** Ordena as tarefas pela data de criacao */
 		ordenaTarefas();
 
+		/** Faz o escalonamento das tarefas segunda a politica escolhida */
+		escalonaTarefas();
+
+	}
+
+	/** Faz o escalonamento das tarefas segunda a politica escolhida */
+	private static void escalonaTarefas() {
+		/** Tempo total de todas as tarefas */
+		int tmax = tempoTotal();
+		int t = 0;
+
+		processador = Processador.getInstancia();
+		tarefasProntas = new LinkedList<Tarefa>();
+
+		while (t < tmax) {
+			if (!processador.isLivre()) {
+				if (tarefaRodando.getTempoRestante() == 0) {
+					tarefaRodando.setEstado(Estado.Terminda);
+					processador.free();
+				} else {
+					if(preemptivo){
+						if(tarefaRodando.getQuantumAtual()==0){
+							tarefasProntas.add(tarefaRodando);
+							tarefaRodando.setEstado(Estado.Pronta);
+							processador.free();
+						}
+					}
+					// TODO
+				}
+			}
+			for (Tarefa tarefa : tarefas) {
+				/** coloca a tarefa na fila de prontas */
+				if (tarefa.getCriacao() == t) {
+					tarefasProntas.add(tarefa);
+					tarefa.setEstado(Estado.Pronta);
+
+				}
+			}
+			if (processador.isLivre()) {
+				/** verifica se existe tarefas no estado pronta */
+				if (tarefasProntas.size() != 0) {
+					tarefaRodando = escolheTarefa();
+					tarefaRodando.setEstado(Estado.Executando);
+					processador.lock();
+				}
+			}
+			/** imprime linha do diagrama com o estado de cada tarefa */
+			System.out.printf("%2d-%2d%3s", t, (t + 1), " ");
+			for (Tarefa tarefa : tarefas) {
+				if (tarefa.equals(tarefaRodando)) {
+					System.out.print("##");
+				} else {
+					System.out.printf("%4s", " ");
+				}
+			}
+			System.out.println();
+
+			++t;
+			tarefaRodando.decrementaTempoRestante();
+			tarefaRodando.decrementaQuantum();
+		}
+
+	}
+
+	private static Tarefa escolheTarefa() {
+		// TODO
+		switch (politica) {
+		case fcfs:
+		case rr: {
+
+			return tarefasProntas.remove(0);
+
+		}
+
+		default:
+			return null;
+		}
+
+	}
+
+	/** Calcula o tempo total de todas as tarefas */
+	private static int tempoTotal() {
+		int t = 0;
+		for (Tarefa tarefa : tarefas) {
+			t += tarefa.getDuracao();
+		}
+		return t;
 	}
 
 	/** Ler os dados da tarefa no arquivo de entrada */
@@ -67,17 +166,23 @@ public class EscalonadorDeTarefas {
 				for (int i = 0; i < 3; ++i) {
 					valores[i] = token.nextToken();
 				}
-				Tarefa tarefa = new Tarefa();
-				tarefa.setCriacao(Integer.parseInt(valores[0]));
-				tarefa.setDuracao(Integer.parseInt(valores[1]));
-				tarefa.setPrioridade(Integer.parseInt(valores[2]));
+				Tarefa tarefa = new Tarefa(Integer.parseInt(valores[0]), Integer.parseInt(valores[1]),
+						Integer.parseInt(valores[2]));
+				if(politica==Politica.rr){
+					tarefa.setQuantumAtual(quantumRR);
+				}
 				tarefas.add(tarefa);
 			}
+			return;
 
 		} catch (FileNotFoundException e) {
-			System.out.println("Arquivo não encontrado");
+			System.out.println("Arquivo \"" + nomeArquivo + "\" não encontrado.");
+			System.out.println("Coloque-o na raiz no projeto.");
+			System.exit(1);
 		} catch (IOException e) {
 			e.printStackTrace();
+			System.out.println("Saiu!");
+			System.exit(1);
 		}
 		/** fechando os objetos de I/O */
 		finally {
@@ -104,7 +209,6 @@ public class EscalonadorDeTarefas {
 					e.printStackTrace();
 				}
 			}
-			System.exit(1);
 		}
 	}
 
@@ -115,8 +219,9 @@ public class EscalonadorDeTarefas {
 		System.out.print("tempo   ");
 		for (int i = 0; i < tarefas.size(); ++i) {
 			tarefas.get(i).setId("P" + (i + 1));
-			System.out.print(tarefas.get(i).getId() + "   ");
+			System.out.print(tarefas.get(i).getId() + "  ");
 		}
+		System.out.println();
 
 	}
 }
