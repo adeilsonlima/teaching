@@ -27,7 +27,7 @@ public class EscalonadorDeTarefas {
 	static List<Tarefa> tarefas;
 
 	public static void main(String[] args) throws IOException {
-		/**Verifica se todos os parametros foram passados*/
+		/** Verifica se todos os parametros foram passados */
 		if (args.length != 2) {
 			System.out.println("Falta argumentos! Tente novamente...");
 			System.out.println("Ex: java EscalonadorDeTarefas input.txt fcfs");
@@ -38,6 +38,16 @@ public class EscalonadorDeTarefas {
 
 		System.out.println(nomeArquivo + " " + politica);
 
+		/** Ler os dados da tarefa no arquivo de entrada */
+		lerArquivo();
+
+		/** Ordena as tarefas pela data de criacao */
+		ordenaTarefas();
+
+	}
+
+	/** Ler os dados da tarefa no arquivo de entrada */
+	private static void lerArquivo() {
 		tarefas = new ArrayList<Tarefa>();
 
 		FileInputStream stream = null;
@@ -51,11 +61,11 @@ public class EscalonadorDeTarefas {
 			String linha = null;
 			/** ler arquivo de entrada linha por linha */
 			while ((linha = reader.readLine()) != null) {
-				/**Ler os números e descarta os espaços*/
+				/** Ler os números e descarta os espaços */
 				StringTokenizer token = new StringTokenizer(linha, " ");
-				String [] valores = new String[3];
-				for(int i=0;i<3;++i){
-					valores[i]=token.nextToken();
+				String[] valores = new String[3];
+				for (int i = 0; i < 3; ++i) {
+					valores[i] = token.nextToken();
 				}
 				Tarefa tarefa = new Tarefa();
 				tarefa.setCriacao(Integer.parseInt(valores[0]));
@@ -64,13 +74,8 @@ public class EscalonadorDeTarefas {
 				tarefas.add(tarefa);
 			}
 
-			for (Tarefa t : tarefas) {
-				System.out.println(t.getCriacao());
-			}
-			ordenaTarefas();
-			
 		} catch (FileNotFoundException e) {
-			e.printStackTrace();
+			System.out.println("Arquivo não encontrado");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -99,19 +104,19 @@ public class EscalonadorDeTarefas {
 					e.printStackTrace();
 				}
 			}
+			System.exit(1);
 		}
-
 	}
 
-	/**Ordena as tarefas pela data de criacao*/
+	/** Ordena as tarefas pela data de criacao */
 	private static void ordenaTarefas() {
-		
+
 		Collections.sort(tarefas);
 		System.out.print("tempo   ");
-		for (int i=0;i <tarefas.size();++i) {
-			tarefas.get(i).setId("P"+(i+1));
-			System.out.print(tarefas.get(i).getId()+"   ");
+		for (int i = 0; i < tarefas.size(); ++i) {
+			tarefas.get(i).setId("P" + (i + 1));
+			System.out.print(tarefas.get(i).getId() + "   ");
 		}
-		
+
 	}
 }
