@@ -51,12 +51,13 @@ public class EscalonadorDeTarefas {
 		}
 
 		System.out.println(nomeArquivo + " " + politica);
+		System.out.println("A saída sera impressa no arquivo \"output\"");
 
 		/** Ler os dados da tarefa no arquivo de entrada */
 		lerArquivo();
 
 		/** Altera a saida padrao */
-		arquivoSaida();
+		 arquivoSaida();
 
 		/** Ordena as tarefas pela data de criacao */
 		ordenaTarefas();
@@ -65,8 +66,6 @@ public class EscalonadorDeTarefas {
 		escalonaTarefas();
 
 	}
-
-
 
 	/** Faz o escalonamento das tarefas segunda a politica escolhida */
 	private static void escalonaTarefas() {
@@ -121,27 +120,7 @@ public class EscalonadorDeTarefas {
 				}
 			}
 			/** imprime linha do diagrama com o estado de cada tarefa */
-			System.out.printf("%2d-%2d ", t, (t + 1));
-			for (Tarefa tarefa : tarefas) {
-				switch (tarefa.getEstado()) {
-				case Executando: {
-					System.out.printf("%4s", "##");
-					break;
-				}
-				case Pronta: {
-					System.out.printf("%4s", "--");
-					break;
-				}
-				case Nova:
-				case Terminda: {
-					System.out.printf("%4s", " ");
-				}
-
-				default:
-					break;
-				}
-			}
-			System.out.println();
+			imprimeLinha(t);
 
 			++t;
 			tarefaRodando.decrementaTempoRestante();
@@ -166,6 +145,37 @@ public class EscalonadorDeTarefas {
 		default:
 			return null;
 		}
+
+	}
+
+	/**
+	 * imprime linha do diagrama com o estado de cada tarefa no tempo t
+	 * 
+	 * @param t
+	 *            tempo atual
+	 */
+	private static void imprimeLinha(int t) {
+		System.out.printf("%2d-%2d ", t, (t + 1));
+		for (Tarefa tarefa : tarefas) {
+			switch (tarefa.getEstado()) {
+			case Executando: {
+				System.out.printf("%4s", "##");
+				break;
+			}
+			case Pronta: {
+				System.out.printf("%4s", "--");
+				break;
+			}
+			case Nova:
+			case Terminda: {
+				System.out.printf("%4s", " ");
+			}
+
+			default:
+				break;
+			}
+		}
+		System.out.println();
 
 	}
 
@@ -241,7 +251,7 @@ public class EscalonadorDeTarefas {
 			}
 		}
 	}
-	
+
 	/** altera saida padrao para arquivo */
 	private static void arquivoSaida() {
 		// cria arquivo
