@@ -3,8 +3,10 @@ package ufal.ic.so;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
@@ -53,6 +55,9 @@ public class EscalonadorDeTarefas {
 		/** Ler os dados da tarefa no arquivo de entrada */
 		lerArquivo();
 
+		/** Altera a saida padrao */
+		arquivoSaida();
+
 		/** Ordena as tarefas pela data de criacao */
 		ordenaTarefas();
 
@@ -60,6 +65,8 @@ public class EscalonadorDeTarefas {
 		escalonaTarefas();
 
 	}
+
+
 
 	/** Faz o escalonamento das tarefas segunda a politica escolhida */
 	private static void escalonaTarefas() {
@@ -71,6 +78,17 @@ public class EscalonadorDeTarefas {
 		tarefasProntas = new LinkedList<Tarefa>();
 
 		while (t < tmax) {
+
+			/*
+			 * /////////////////////
+			 * 
+			 * for(int i=0; i<tarefasProntas.size();++i){
+			 * System.out.print(tarefasProntas.get(i).getId()+"<-"); }
+			 * System.out.println();
+			 * 
+			 */
+			////////////////////
+
 			if (!processador.isLivre()) {
 				if (tarefaRodando.getTempoRestante() == 0) {
 					tarefaRodando.setEstado(Estado.Terminda);
@@ -135,10 +153,13 @@ public class EscalonadorDeTarefas {
 	private static Tarefa escolheTarefa() {
 		// TODO
 		switch (politica) {
-		case fcfs:
-		case rr: {
-
+		case fcfs: {
 			return tarefasProntas.remove(0);
+		}
+		case rr: {
+			Tarefa t = tarefasProntas.remove(0);
+			t.setQuantumAtual(quantumRR);
+			return t;
 
 		}
 
@@ -180,9 +201,6 @@ public class EscalonadorDeTarefas {
 				}
 				Tarefa tarefa = new Tarefa(Integer.parseInt(valores[0]), Integer.parseInt(valores[1]),
 						Integer.parseInt(valores[2]));
-				if (politica == Politica.rr) {
-					tarefa.setQuantumAtual(quantumRR);
-				}
 				tarefas.add(tarefa);
 			}
 			return;
@@ -221,6 +239,18 @@ public class EscalonadorDeTarefas {
 					e.printStackTrace();
 				}
 			}
+		}
+	}
+	
+	/** altera saida padrao para arquivo */
+	private static void arquivoSaida() {
+		// cria arquivo
+		FileOutputStream f;
+		try {
+			f = new FileOutputStream("output");
+			System.setOut(new PrintStream(f));
+		} catch (FileNotFoundException e) {
+			System.out.println("Nao foi possivel criar o arquivo \"output\"");
 		}
 	}
 
