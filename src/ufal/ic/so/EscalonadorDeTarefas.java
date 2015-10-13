@@ -15,9 +15,9 @@ import java.util.StringTokenizer;
 public class EscalonadorDeTarefas {
 	/** quantum definito para Round-Robin */
 	private static int quantumRR = 2;
-	/** passado para o programa na execução em args[0] */
+	/** passado para o programa na execucao em args[0] */
 	private static String nomeArquivo;
-	/** passado para o programa na execução em args[1] */
+	/** passado para o programa na execucao em args[1] */
 	private static Politica politica;
 
 	/** Recurso processador */
@@ -28,8 +28,8 @@ public class EscalonadorDeTarefas {
 
 	/** Lista tarefas prontas */
 	private static List<Tarefa> tarefasProntas;
-	
-	private static boolean preemptivo=false;
+
+	private static boolean preemptivo = false;
 
 	/** tarefa no estado executando */
 	private static Tarefa tarefaRodando = null;
@@ -43,9 +43,9 @@ public class EscalonadorDeTarefas {
 		}
 		nomeArquivo = args[0];
 		politica = Politica.valueOf(args[1]);
-		
-		if(politica==Politica.rr){
-			preemptivo=true;
+
+		if (politica == Politica.rr) {
+			preemptivo = true;
 		}
 
 		System.out.println(nomeArquivo + " " + politica);
@@ -76,8 +76,8 @@ public class EscalonadorDeTarefas {
 					tarefaRodando.setEstado(Estado.Terminda);
 					processador.free();
 				} else {
-					if(preemptivo){
-						if(tarefaRodando.getQuantumAtual()==0){
+					if (preemptivo) {
+						if (tarefaRodando.getQuantumAtual() == 0) {
 							tarefasProntas.add(tarefaRodando);
 							tarefaRodando.setEstado(Estado.Pronta);
 							processador.free();
@@ -103,12 +103,24 @@ public class EscalonadorDeTarefas {
 				}
 			}
 			/** imprime linha do diagrama com o estado de cada tarefa */
-			System.out.printf("%2d-%2d%3s", t, (t + 1), " ");
+			System.out.printf("%2d-%2d ", t, (t + 1));
 			for (Tarefa tarefa : tarefas) {
-				if (tarefa.equals(tarefaRodando)) {
-					System.out.print("##");
-				} else {
+				switch (tarefa.getEstado()) {
+				case Executando: {
+					System.out.printf("%4s", "##");
+					break;
+				}
+				case Pronta: {
+					System.out.printf("%4s", "--");
+					break;
+				}
+				case Nova:
+				case Terminda: {
 					System.out.printf("%4s", " ");
+				}
+
+				default:
+					break;
 				}
 			}
 			System.out.println();
@@ -160,7 +172,7 @@ public class EscalonadorDeTarefas {
 			String linha = null;
 			/** ler arquivo de entrada linha por linha */
 			while ((linha = reader.readLine()) != null) {
-				/** Ler os números e descarta os espaços */
+				/** Ler os numeros e descarta os espacos */
 				StringTokenizer token = new StringTokenizer(linha, " ");
 				String[] valores = new String[3];
 				for (int i = 0; i < 3; ++i) {
@@ -168,7 +180,7 @@ public class EscalonadorDeTarefas {
 				}
 				Tarefa tarefa = new Tarefa(Integer.parseInt(valores[0]), Integer.parseInt(valores[1]),
 						Integer.parseInt(valores[2]));
-				if(politica==Politica.rr){
+				if (politica == Politica.rr) {
 					tarefa.setQuantumAtual(quantumRR);
 				}
 				tarefas.add(tarefa);
@@ -176,7 +188,7 @@ public class EscalonadorDeTarefas {
 			return;
 
 		} catch (FileNotFoundException e) {
-			System.out.println("Arquivo \"" + nomeArquivo + "\" não encontrado.");
+			System.out.println("Arquivo \"" + nomeArquivo + "\" nao encontrado.");
 			System.out.println("Coloque-o na raiz no projeto.");
 			System.exit(1);
 		} catch (IOException e) {
@@ -216,10 +228,10 @@ public class EscalonadorDeTarefas {
 	private static void ordenaTarefas() {
 
 		Collections.sort(tarefas);
-		System.out.print("tempo   ");
+		System.out.print("tempo ");
 		for (int i = 0; i < tarefas.size(); ++i) {
 			tarefas.get(i).setId("P" + (i + 1));
-			System.out.print(tarefas.get(i).getId() + "  ");
+			System.out.printf("%4s", tarefas.get(i).getId());
 		}
 		System.out.println();
 

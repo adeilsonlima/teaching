@@ -19,15 +19,12 @@ public class Tarefa implements Comparable<Tarefa> {
 	/**Monitor de quantum*/
 	private int quantumAtual;
 
-	public Tarefa() {
-		this.estado = Estado.Nova;
-	}
-
 	public Tarefa(int criacao, int duracao, int prioridade) {
 		this.criacao = criacao;
 		this.duracao = duracao;
 		this.prioridade = prioridade;
 		this.tempoRestante = duracao;
+		this.estado = Estado.Nova;
 	}
 
 	public String getId() {
