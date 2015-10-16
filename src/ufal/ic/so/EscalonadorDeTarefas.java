@@ -47,7 +47,7 @@ public class EscalonadorDeTarefas {
 		nomeArquivo = args[0];
 		politica = Politica.valueOf(args[1]);
 
-		if (politica == Politica.rr) {
+		if (politica == Politica.rr || politica == Politica.rr2) {
 			preemptivo = true;
 		}
 
@@ -65,7 +65,7 @@ public class EscalonadorDeTarefas {
 
 		/** Faz o escalonamento das tarefas segunda a politica escolhida */
 		escalonaTarefas();
-
+		
 	}
 
 	/** Faz o escalonamento das tarefas segunda a politica escolhida */
@@ -79,16 +79,6 @@ public class EscalonadorDeTarefas {
 
 		while (t < tmax) {
 
-			/*
-			 * /////////////////////
-			 * 
-			 * for(int i=0; i<tarefasProntas.size();++i){
-			 * System.out.print(tarefasProntas.get(i).getId()+"<-"); }
-			 * System.out.println();
-			 * 
-			 */
-			////////////////////
-
 			if (!processador.isLivre()) {
 				if (tarefaRodando.getTempoRestante() == 0) {
 					tarefaRodando.setEstado(Estado.Terminda);
@@ -101,7 +91,6 @@ public class EscalonadorDeTarefas {
 							processador.free();
 						}
 					}
-					// TODO
 				}
 			}
 			for (Tarefa tarefa : tarefas) {
@@ -140,6 +129,19 @@ public class EscalonadorDeTarefas {
 			Collections.sort(tarefasProntas);
 			Tarefa t = tarefasProntas.remove(0);
 			t.setQuantumAtual(quantumRR);
+			return t;
+
+		}
+		case rr2: {
+			Collections.sort(tarefasProntas);
+			Tarefa t = tarefasProntas.remove(0);
+			t.setQuantumAtual(quantumRR);
+			t.resetPrioridadeDinamicia();//prioridade dinamica = estatica
+			for (Tarefa tarefa : tarefasProntas) {
+				//prioridade das tarefas "prontas" sao incrementadas em 1
+				tarefa.incPrioridadeDinamica();
+			}
+
 			return t;
 
 		}

@@ -11,6 +11,9 @@ public class Tarefa implements Comparable<Tarefa> {
 	/** prioridade da tarefa. Crescente */
 	private int prioridade;
 
+	/** Prioridade dinaminca */
+	private int prioridadeDinamicia;
+
 	/** Estado da tarefa ex.:pronta, executando,encerrada */
 	private Estado estado;
 	/** Tempo restante para a termino da tarefa */
@@ -25,6 +28,7 @@ public class Tarefa implements Comparable<Tarefa> {
 		this.prioridade = prioridade;
 		this.tempoRestante = duracao;
 		this.estado = Estado.Nova;
+		this.prioridadeDinamicia = prioridade;
 	}
 
 	public String getId() {
@@ -45,6 +49,10 @@ public class Tarefa implements Comparable<Tarefa> {
 
 	public int getPrioridade() {
 		return prioridade;
+	}
+
+	public void incPrioridadeDinamica() {
+		++this.prioridadeDinamicia;
 	}
 
 	public Estado getEstado() {
@@ -72,7 +80,8 @@ public class Tarefa implements Comparable<Tarefa> {
 	 */
 	@Override
 	public int compareTo(Tarefa o) {
-		int cmp = this.prioridade > o.getPrioridade() ? -1 : this.prioridade < o.getPrioridade() ? 1 : 0;
+		int cmp = this.prioridadeDinamicia > o.getPrioridadeDinamicia() ? -1
+				: this.prioridadeDinamicia < o.getPrioridadeDinamicia() ? 1 : 0;
 		return cmp;
 	}
 
@@ -93,5 +102,13 @@ public class Tarefa implements Comparable<Tarefa> {
 
 	public void decrementaQuantum() {
 		--quantumAtual;
+	}
+
+	public int getPrioridadeDinamicia() {
+		return prioridadeDinamicia;
+	}
+
+	public void resetPrioridadeDinamicia() {
+		this.prioridadeDinamicia = this.prioridade;
 	}
 }
