@@ -84,7 +84,12 @@ public class Tarefa implements Comparable<Tarefa> {
 	 */
 	@Override
 	public int compareTo(Tarefa o) {
-		int cmp = this.criacao > o.getCriacao() ? +1 : this.criacao < o.getCriacao() ? -1 : 0;
+		//int cmp = this.criacao > o.getCriacao() ? +1 : this.criacao < o.getCriacao() ? -1 : 0;
+		//return cmp;
+		int cmp = this.criacao-o.getCriacao() ;
+		if(cmp ==0){
+			cmp = this.prioridade - o.getPrioridade();
+		}
 		return cmp;
 	}
 

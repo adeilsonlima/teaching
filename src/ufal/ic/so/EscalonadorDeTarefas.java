@@ -57,7 +57,7 @@ public class EscalonadorDeTarefas {
 		lerArquivo();
 
 		/** Altera a saida padrao */
-		 arquivoSaida();
+	//	 arquivoSaida();
 
 		/** Ordena as tarefas pela data de criacao */
 		ordenaTarefas();
