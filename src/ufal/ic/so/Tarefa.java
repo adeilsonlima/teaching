@@ -15,8 +15,8 @@ public class Tarefa implements Comparable<Tarefa> {
 	private Estado estado;
 	/** Tempo restante para a termino da tarefa */
 	private int tempoRestante;
-	
-	/**Monitor de quantum*/
+
+	/** Monitor de quantum */
 	private int quantumAtual;
 
 	public Tarefa(int criacao, int duracao, int prioridade) {
@@ -39,25 +39,13 @@ public class Tarefa implements Comparable<Tarefa> {
 		return criacao;
 	}
 
-	/*public void setCriacao(int criacao) {
-		this.criacao = criacao;
-	}*/
-
 	public int getDuracao() {
 		return duracao;
 	}
 
-	/*public void setDuracao(int duracao) {
-		this.duracao = duracao;
-	}*/
-
 	public int getPrioridade() {
 		return prioridade;
 	}
-
-	/*public void setPrioridade(int prioridade) {
-		this.prioridade = prioridade;
-	}*/
 
 	public Estado getEstado() {
 		return estado;
@@ -84,12 +72,7 @@ public class Tarefa implements Comparable<Tarefa> {
 	 */
 	@Override
 	public int compareTo(Tarefa o) {
-		//int cmp = this.criacao > o.getCriacao() ? +1 : this.criacao < o.getCriacao() ? -1 : 0;
-		//return cmp;
-		int cmp = this.criacao-o.getCriacao() ;
-		if(cmp ==0){
-			cmp = this.prioridade - o.getPrioridade();
-		}
+		int cmp = this.prioridade > o.getPrioridade() ? -1 : this.prioridade < o.getPrioridade() ? 1 : 0;
 		return cmp;
 	}
 
@@ -101,13 +84,14 @@ public class Tarefa implements Comparable<Tarefa> {
 	}
 
 	/**
-	 * @param quantumAtual the quantumAtual to set
+	 * @param quantumAtual
+	 *            the quantumAtual to set
 	 */
 	public void setQuantumAtual(int quantumAtual) {
 		this.quantumAtual = quantumAtual;
 	}
-	
-	public void decrementaQuantum(){
+
+	public void decrementaQuantum() {
 		--quantumAtual;
 	}
 }

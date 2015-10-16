@@ -9,6 +9,7 @@ import java.io.InputStreamReader;
 import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
@@ -57,10 +58,10 @@ public class EscalonadorDeTarefas {
 		lerArquivo();
 
 		/** Altera a saida padrao */
-	//	 arquivoSaida();
+		arquivoSaida();
 
 		/** Ordena as tarefas pela data de criacao */
-		ordenaTarefas();
+		ordenaTarefasInicio();
 
 		/** Faz o escalonamento das tarefas segunda a politica escolhida */
 		escalonaTarefas();
@@ -136,6 +137,7 @@ public class EscalonadorDeTarefas {
 			return tarefasProntas.remove(0);
 		}
 		case rr: {
+			Collections.sort(tarefasProntas);
 			Tarefa t = tarefasProntas.remove(0);
 			t.setQuantumAtual(quantumRR);
 			return t;
@@ -265,9 +267,22 @@ public class EscalonadorDeTarefas {
 	}
 
 	/** Ordena as tarefas pela data de criacao */
-	private static void ordenaTarefas() {
+	private static void ordenaTarefasInicio() {
 
-		Collections.sort(tarefas);
+		// Collections.sort(tarefas);
+		Collections.sort(tarefas, new Comparator<Tarefa>() {
+
+			@Override
+			public int compare(Tarefa o1, Tarefa o2) {
+				if (o1.getCriacao() > o2.getCriacao()) {
+					return 1;
+				} else if (o1.getCriacao() < o2.getCriacao()) {
+					return -1;
+				}
+				return o2.getPrioridade() - o1.getPrioridade();
+			}
+
+		});
 		System.out.print("tempo ");
 		for (int i = 0; i < tarefas.size(); ++i) {
 			tarefas.get(i).setId("P" + (i + 1));
