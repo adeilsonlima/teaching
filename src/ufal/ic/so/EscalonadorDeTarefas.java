@@ -52,12 +52,13 @@ public class EscalonadorDeTarefas {
 		}
 
 		System.out.println(nomeArquivo + " " + politica);
-		System.out.println("A saida sera impressa no arquivo \"output\"");
 
 		/** Ler os dados da tarefa no arquivo de entrada */
 		lerArquivo();
+		
 
 		/** Altera a saida padrao */
+		System.out.println("A saida sera impressa no arquivo \"output\"");
 		arquivoSaida();
 
 		/** Ordena as tarefas pela data de criacao */
