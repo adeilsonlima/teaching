@@ -47,12 +47,12 @@ public class EscalonadorDeTarefas {
 		nomeArquivo = args[0];
 		politica = Politica.valueOf(args[1]);
 
-		if (politica == Politica.rr || politica == Politica.rr2) {
+		if (politica == Politica.rr || politica == Politica.rr2 || politica == Politica.rr3) {
 			preemptivo = true;
 		}
 
 		System.out.println(nomeArquivo + " " + politica);
-		System.out.println("A saída sera impressa no arquivo \"output\"");
+		System.out.println("A saida sera impressa no arquivo \"output\"");
 
 		/** Ler os dados da tarefa no arquivo de entrada */
 		lerArquivo();
@@ -65,7 +65,7 @@ public class EscalonadorDeTarefas {
 
 		/** Faz o escalonamento das tarefas segunda a politica escolhida */
 		escalonaTarefas();
-		
+
 	}
 
 	/** Faz o escalonamento das tarefas segunda a politica escolhida */
@@ -109,6 +109,14 @@ public class EscalonadorDeTarefas {
 					processador.lock();
 				}
 			}
+			if (politica == Politica.rr3) {
+				for (Tarefa tarefa : tarefasProntas) {
+					/**
+					 * prioridade das tarefas "prontas" sao incrementadas em 1
+					 */
+					tarefa.incPrioridadeDinamica();
+				}
+			}
 			/** imprime linha do diagrama com o estado de cada tarefa */
 			imprimeLinha(t);
 
@@ -120,13 +128,11 @@ public class EscalonadorDeTarefas {
 	}
 
 	private static Tarefa escolheTarefa() {
-		// TODO
 		switch (politica) {
 		case fcfs: {
 			return tarefasProntas.remove(0);
 		}
 		case rr: {
-			Collections.sort(tarefasProntas);
 			Tarefa t = tarefasProntas.remove(0);
 			t.setQuantumAtual(quantumRR);
 			return t;
@@ -136,11 +142,14 @@ public class EscalonadorDeTarefas {
 			Collections.sort(tarefasProntas);
 			Tarefa t = tarefasProntas.remove(0);
 			t.setQuantumAtual(quantumRR);
-			t.resetPrioridadeDinamicia();//prioridade dinamica = estatica
-			for (Tarefa tarefa : tarefasProntas) {
-				//prioridade das tarefas "prontas" sao incrementadas em 1
-				tarefa.incPrioridadeDinamica();
-			}
+			return t;
+
+		}
+		case rr3: {
+			Collections.sort(tarefasProntas);
+			Tarefa t = tarefasProntas.remove(0);
+			t.setQuantumAtual(quantumRR);
+			t.resetPrioridadeDinamicia();// prioridade dinamica = estatica
 
 			return t;
 
@@ -271,7 +280,6 @@ public class EscalonadorDeTarefas {
 	/** Ordena as tarefas pela data de criacao */
 	private static void ordenaTarefasInicio() {
 
-		// Collections.sort(tarefas);
 		Collections.sort(tarefas, new Comparator<Tarefa>() {
 
 			@Override
