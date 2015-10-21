@@ -18,7 +18,7 @@ Mover o arquivo de entrada, por exemplo, **`input.txt`**, para a pasta **`bin`**
 ```bash
 input.txt bin
 
-java ufal.ic.so.EscalonadorDeTarefas [arquivo] [politica]
+java ufal.ic.so.EscalonadorDeTarefas "arquivo" "politica"
 
 ```
 `arquivo` - Nome do arquivo de entrada, por exemplo **`input.txt`**. <br>

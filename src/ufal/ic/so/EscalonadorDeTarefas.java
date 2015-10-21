@@ -23,6 +23,9 @@ public class EscalonadorDeTarefas {
 	/** passado para o programa na execucao em args[1] */
 	private static Politica politica;
 
+	/** Tempo total do processador */
+	private static int tmax;
+
 	/** Recurso processador */
 	private static Processador processador;
 
@@ -55,7 +58,6 @@ public class EscalonadorDeTarefas {
 
 		/** Ler os dados da tarefa no arquivo de entrada */
 		lerArquivo();
-		
 
 		/** Altera a saida padrao */
 		System.out.println("A saida sera impressa no arquivo \"output\"");
@@ -72,7 +74,7 @@ public class EscalonadorDeTarefas {
 	/** Faz o escalonamento das tarefas segunda a politica escolhida */
 	private static void escalonaTarefas() {
 		/** Tempo total de todas as tarefas */
-		int tmax = tempoTotal();
+		tmax = tempoTotal();
 		int t = 0;
 
 		processador = Processador.getInstancia();
@@ -83,6 +85,7 @@ public class EscalonadorDeTarefas {
 			if (!processador.isLivre()) {
 				if (tarefaRodando.getTempoRestante() == 0) {
 					tarefaRodando.setEstado(Estado.Terminda);
+					tarefaRodando = null;
 					processador.free();
 				} else {
 					if (preemptivo) {
@@ -122,8 +125,12 @@ public class EscalonadorDeTarefas {
 			imprimeLinha(t);
 
 			++t;
-			tarefaRodando.decrementaTempoRestante();
-			tarefaRodando.decrementaQuantum();
+			if (tarefaRodando != null) {
+				tarefaRodando.decrementaTempoRestante();
+				tarefaRodando.decrementaQuantum();
+			} else {
+				++tmax;
+			}
 		}
 
 	}
@@ -225,7 +232,13 @@ public class EscalonadorDeTarefas {
 				}
 				Tarefa tarefa = new Tarefa(Integer.parseInt(valores[0]), Integer.parseInt(valores[1]),
 						Integer.parseInt(valores[2]));
-				tarefas.add(tarefa);
+				if (tarefa.getCriacao() >= 0 && tarefa.getDuracao() >= 1) {
+					tarefas.add(tarefa);
+				} else {
+					System.out.println(
+							"Tarefas com tempo de criação menor que 0 e/ou duração menor 1 não entram no processamento!");
+				}
+
 			}
 			return;
 
